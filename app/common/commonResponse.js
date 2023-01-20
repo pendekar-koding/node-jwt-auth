@@ -1,6 +1,6 @@
 
 
-function responseSuccess(data) {
+exports.success = function responseSuccess(data) {
     return {
         statusCode: 200,
         status: true,
@@ -9,5 +9,20 @@ function responseSuccess(data) {
     }
 }
 
+exports.successNoData = function responseSuccess() {
+    return {
+        statusCode: 201,
+        status: true,
+        message: "success",
+        data: []
+    }
+}
 
-module.exports = responseSuccess;
+exports.signoutSuccess = function responseSuccessSignOut() {
+    return {
+        statusCode: 200,
+        status: true,
+        message: "success Signout"
+    }
+}
+

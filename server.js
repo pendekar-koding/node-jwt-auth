@@ -34,7 +34,8 @@ app.listen(PORT, () => {
 
 db.sequelize.sync({
     alter: true,
-    logging: false
+    logging: false,
+    force: false
 }).then(() => {
     console.log('Resync Db');
     // initial();

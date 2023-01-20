@@ -1,29 +1,44 @@
 const jwt = require("jsonwebtoken");
 const config = require("../auth/config.js");
 const db = require("../models");
-const {verify} = require("jsonwebtoken");
 const User = db.user;
+const History = db.loginHistory;
 
 
 verifyToken = (req, res, next) => {
     let header = req.header('authorization');
-    let token = header.replace("Bearer ", "")
+    let token = header.replace("Bearer ", "");
 
-    if (!token) {
-        return res.status(400).send({
-            message: "No token provided!"
-        });
-    }
-
-    jwt.verify(token, config.secret, (err, decoded) => {
-        if (err) {
-            return res.status(401).send({
-                message: "Unauthorized!"
-            })
+    History.findOne({
+        where: {
+            token: token
         }
-        req.userId = decoded.id;
-        next();
-    });
+    })
+        .then(history => {
+            let status = history.deleted;
+
+            if (status !== true) {
+                if (!token) {
+                    return res.status(400).send({
+                        message: "No token provided!"
+                    });
+                }
+
+                jwt.verify(token, config.secret, (err, decoded) => {
+                    if (err) {
+                        return res.status(401).send({
+                            message: "Unauthorized!"
+                        })
+                    }
+                    req.userId = decoded.id;
+                    next();
+                });
+            } else {
+                return  res.status(401).send({
+                    message: "Token Expired"
+                })
+            }
+        });
 };
 
 isAdmin = (req, res, next) => {

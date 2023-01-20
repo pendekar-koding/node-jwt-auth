@@ -5,11 +5,18 @@ module.exports = (sequelize, Sequelize) => {
         username: {
             type: Sequelize.STRING
         },
+        deleted:{
+            type: Sequelize.BOOLEAN,
+            default: false
+        },
         email: {
             type: Sequelize.STRING
         },
         password: {
             type: Sequelize.STRING
+        },
+        isLogin: {
+            type: Sequelize.BOOLEAN
         }
     });
 

@@ -9,13 +9,12 @@ const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
-const {response} = require("express");
-
 exports.signup = (req, res) => {
     User.create({
         username : req.body.username,
         email : req.body.email,
-        password : bcrypt.hashSync(req.body.password)
+        password : bcrypt.hashSync(req.body.password),
+        deleted: false
     })
         .then(user => {
             if (req.body.roles) {
@@ -41,6 +40,34 @@ exports.signup = (req, res) => {
             res.status(500).send({message : err.message});
         });
 };
+
+exports.signout = (req, res) => {
+    let header = req.header('authorization');
+    let token = header.replace("Bearer ", "");
+
+    History.findOne({
+        where: {
+            token: token
+        }
+    }).then(history => {
+        History.update({
+            deleted: true
+        }, {
+            where: {
+                id: history.id
+            }
+        })
+        User.update({
+            isLogin: false
+        }, {
+            where: {
+                id: history.userId
+            }
+        });
+
+        return res.json(common.signoutSuccess());
+    });
+}
 
 
 exports.signin = (req, res) => {
@@ -81,8 +108,16 @@ exports.signin = (req, res) => {
                     email: user.email,
                     roles: authorities
                 }
-                res.setHeader('Authorization', 'Bearer '+ token);
-                res.json(common(data));
+                res.setHeader('Authorization', token);
+                res.json(common.success(data));
+            });
+
+            User.update({
+                isLogin: true
+            }, {
+                where: {
+                    id: user.id
+                }
             });
 
             History.update({
