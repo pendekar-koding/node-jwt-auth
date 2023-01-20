@@ -1,5 +1,6 @@
 const db = require("../models");
 const config = require("../auth/config");
+const common = require("../common/commonResponse");
 const User = db.user;
 const Role = db.role;
 const History = db.loginHistory;
@@ -8,6 +9,7 @@ const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const {response} = require("express");
 
 exports.signup = (req, res) => {
     User.create({
@@ -66,18 +68,21 @@ exports.signin = (req, res) => {
                 expiresIn: 86400 //24hours
             });
 
+
             var authorities = [];
+            var data;
             user.getRoles().then(roles => {
                 for (let i = 0; i < roles.length; i++) {
                     authorities.push("ROLE_" + roles[i].name.toUpperCase());
                 }
-                res.setHeader('Authorization', 'Bearer '+ token);
-                res.status(200).send({
+                data = {
                     id: user.id,
                     username: user.username,
                     email: user.email,
                     roles: authorities
-                });
+                }
+                res.setHeader('Authorization', 'Bearer '+ token);
+                res.json(common(data));
             });
 
             History.update({

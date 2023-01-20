@@ -2,7 +2,7 @@ const {Sequelize} = require("sequelize");
 
 
 module.exports = (sequelize, Sequelize) => {
-    const LoginHistory = sequelize.define("login_history", {
+    const LoginHistory = sequelize.define("login_histories", {
         userId: {
             type: Sequelize.INTEGER,
             references: {

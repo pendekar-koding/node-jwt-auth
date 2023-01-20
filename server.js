@@ -32,7 +32,10 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
 });
 
-db.sequelize.sync({alter: true, logging: false}).then(() => {
+db.sequelize.sync({
+    alter: true,
+    logging: false
+}).then(() => {
     console.log('Resync Db');
     // initial();
 });
