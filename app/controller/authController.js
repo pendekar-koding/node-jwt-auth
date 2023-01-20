@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../auth/config");
 const User = db.user;
 const Role = db.role;
+const History = db.loginHistory;
 
 const Op = db.Sequelize.Op;
 
@@ -57,7 +58,6 @@ exports.signin = (req, res) => {
 
             if (!passwordIsValid) {
                 return res.status(401).send({
-                    accessToken: null,
                     message: "Invalid Password"
                 });
             }
@@ -78,6 +78,20 @@ exports.signin = (req, res) => {
                     email: user.email,
                     roles: authorities
                 });
+            });
+
+            History.update({
+                deleted: true
+            }, {
+                where: {
+                    userId: user.id
+                }
+            });
+
+            History.create({
+                userId: user.id,
+                deleted: false,
+                token: token
             });
         })
         .catch(err => {

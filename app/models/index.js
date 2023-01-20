@@ -27,6 +27,7 @@ db.sequelize = sequelize;
 
 db.user = require("./user")(sequelize, Sequelize);
 db.role = require("./role")(sequelize, Sequelize);
+db.loginHistory = require("./loginHistory")(sequelize, Sequelize);
 
 db.role.belongsToMany(db.user, {
         through: "user_roles",
